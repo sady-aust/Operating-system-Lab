@@ -1,3 +1,11 @@
+/*
+ *In the name of Allah the Most Merciful.
+ * Author
+ * Md. Toufiqul Islam
+ * Dept. Of CSE
+ * Ahsanullah University Of Science And Technology
+ */
+
 import java.io.*;
 import java.util.*;
 import java.math.*;

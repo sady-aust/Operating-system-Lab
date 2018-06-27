@@ -7,11 +7,10 @@
  *
  * Priority Scheduling
  * Non-PreEmtive
+ * Lower priority means highest Priority
  */
 
 import java.util.*;
-import java.math.*;
-import java.io.*;
 
 public class PrioritySchedulingNonPreEmtive {
 
@@ -33,7 +32,6 @@ public class PrioritySchedulingNonPreEmtive {
             turnAroundTime = 0;
 
             isTaken = false;
-
         }
     }
 
@@ -58,7 +56,7 @@ public class PrioritySchedulingNonPreEmtive {
         Collections.sort(list, new Comparator<Process>() {
             @Override
             public int compare(Process o1, Process o2) {
-                return o1.priority - o2.priority;
+                return o1.arrivalTime - o2.arrivalTime;
             }
         });
 
@@ -84,44 +82,34 @@ public class PrioritySchedulingNonPreEmtive {
 
     }
 
-    public static void doPriorityScheduling(List<Process> processes) {
-        int totalTime = 0;
-        processes.get(processes.size() - 1).waitingTime = 0;
+    public static void doPriorityScheduling(List<Process> processList) {
+        int totalTime =0;
 
-        Queue<Process> queue = new LinkedList<>();
-        queue.add(processes.get(processes.size() - 1));
-        processes.get(processes.size() - 1).isTaken = true;
+        totalTime += processList.get(0).cpuTime;
+        processList.get(0).waitingTime = 0;
+        processList.get(0).isTaken = true;
 
-        while (!queue.isEmpty()) {
-            Process front = queue.poll();
-            front.waitingTime = totalTime - front.arrivalTime;
-            totalTime += front.cpuTime;
-
-
-            List<Process> myList = new ArrayList<>();
-
-            for (int i = processes.size() - 1; i >= 0; i--) {
-                if (!processes.get(i).isTaken) {
-                    if (processes.get(i).arrivalTime <= totalTime) {
-                        myList.add(processes.get(i));
-                    }
-                }
+        /*
+        * Process gulake prio rity value onujaye sort korchi karon lower priority value means highest prio rity
+        * according to Lab mannual
+        */
+        Collections.sort(processList, new Comparator<Process>() {
+            @Override
+            public int compare(Process o1, Process o2) {
+                return o1.priority-o2.priority;
             }
+        });
 
-            Collections.sort(myList, new Comparator<Process>() {
-                @Override
-                public int compare(Process o1, Process o2) {
-                    return o1.priority - o2.priority;
-                }
-            });
-
-            for (Process p : myList) {
-                p.isTaken = true;
-                queue.add(p);
+        for(Process myProcess : processList){
+            if(!myProcess.isTaken){
+                myProcess.waitingTime = totalTime -myProcess.arrivalTime;
+                totalTime += myProcess.cpuTime;
+                myProcess.isTaken = true;
             }
-
-
         }
+
+
+
 
     }
 

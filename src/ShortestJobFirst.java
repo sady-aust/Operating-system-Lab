@@ -1,3 +1,13 @@
+/*
+ *In the name of Allah the Most Merciful.
+ * Author
+ * Md. Toufiqul Islam
+ * Dept. Of CSE
+ * Ahsanullah University Of Science And Technology
+ *
+ * Shortest Job First Non Pre Emtive Version
+ */
+
 import java.io.*;
 import java.util.*;
 import java.math.*;
@@ -8,11 +18,13 @@ public class ShortestJobFirst {
         public int cpuTime;
         public int waitingTime  = 0;
         public int turnAroundTime = 0;
+        public boolean isTaken;
 
         public Process(int processId,int arrivalTime,int cpuTime){
             this.processId = processId;
             this.arrivalTime = arrivalTime;
             this.cpuTime = cpuTime;
+            isTaken = false;
         }
 
 
@@ -37,6 +49,13 @@ public class ShortestJobFirst {
 
             process.add(new Process((i),arrival,cpuTime));
         }
+
+        Collections.sort(process, new Comparator<Process>() {
+            @Override
+            public int compare(Process o1, Process o2) {
+                return o1.arrivalTime-o2.arrivalTime;
+            }
+        });
 
 
         calculateWaitingTime(process);
@@ -71,11 +90,22 @@ public class ShortestJobFirst {
     public static void calculateWaitingTime(List<Process> processes){
         processes.get(0).waitingTime =0;
         int totalTime = processes.get(0).cpuTime;
+        processes.get(0).isTaken = true;
 
-        for(int i=1;i<processes.size();i++){
-            //process.get(i).waitingTime = (process.get(i-1).waitingTime+process.get(i-1).cpuTime)-process.get(i).arrivalTime;
-            processes.get(i).waitingTime = totalTime-processes.get(i).arrivalTime;
-            totalTime += processes.get(i).cpuTime;
+        Collections.sort(processes, new Comparator<Process>() {
+            @Override
+            public int compare(Process o1, Process o2) {
+                return o1.cpuTime-o2.cpuTime;
+            }
+        });
+
+        for(int i=0;i<processes.size();i++){
+            if(!processes.get(i).isTaken) {
+                processes.get(i).waitingTime = totalTime - processes.get(i).arrivalTime;
+
+                totalTime += processes.get(i).cpuTime;
+                processes.get(i).isTaken = true;
+            }
 
         }
     }
