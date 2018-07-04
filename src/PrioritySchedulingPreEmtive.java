@@ -42,12 +42,14 @@ public class PrioritySchedulingPreEmtive {
         System.out.println("Enter the Number of Process");
         int p = sc.nextInt();
         List<Process> list = new ArrayList<>();
+        int totalTime =0;
 
         for (int i = 1; i <= p; i++) {
             System.out.println("Enter the arrival Time for Process " + i);
             int arrivalTime = sc.nextInt();
             System.out.println("Enter the Cpu Time For Process " + i);
             int cputTime = sc.nextInt();
+            totalTime +=cputTime;
             System.out.println("Enter the Priority for Process " + i);
             int priority = sc.nextInt();
 
@@ -63,7 +65,7 @@ public class PrioritySchedulingPreEmtive {
 
             }
         });
-        doPriorityScheduling(list);
+        doPriorityScheduling(list,totalTime);
         calculateTurnAroundTime(list);
         double avgTurnAroundTime =  calculateAvgTurnAroundTIme(list);
         double avgTWaitingTime = calculateAvgWaitingTime(list);
@@ -85,83 +87,83 @@ public class PrioritySchedulingPreEmtive {
 
     }
 
-    public static void doPriorityScheduling(List<Process> processList) {
+    static void doPriorityScheduling(List<Process> processList,int maxTime) {
         int totalTime = 0;
 
-        Queue<Process> queue = new LinkedList<>();
-        queue.add(processList.get(0));
-        processList.get(0).isTaken = true;
+        int id = -1;
+        while (totalTime!=maxTime){
+            List<Process> allProcess = allProcessAtTHisTime(processList,totalTime);
+            Process aProcess = extractHigherPriorityProcess(allProcess);
+            if(id!=aProcess.processId) {
+                aProcess.waitingTime += (totalTime - aProcess.lastTime);
 
-        Collections.sort(processList, new Comparator<Process>() {
-            @Override
-            public int compare(Process o1, Process o2) {
-                if (o1.priority == o2.priority) {
-                    return o1.arrivalTime - o2.arrivalTime;
-                } else {
-                    return o1.priority - o2.priority;
-                }
-            }
-        });
-
-        List<Process> remainIngProcess = new ArrayList<>();
-
-        while (!queue.isEmpty()) {
-            Process aProcess = queue.poll();
-            aProcess.waitingTime += (totalTime - aProcess.lastTime);
-
-
-            while (true) {
-                List<Process> anyProcess = processesArriveWithLowerPriority(processList, aProcess, totalTime);
-
-                if (anyProcess.size() == 0) {
-                    totalTime++;
-                    aProcess.cpuTime--;
-
-                    if(aProcess.cpuTime ==0){
-                        break;
-                    }
-                } else {
-                    break;
-                }
+                id = aProcess.processId;
             }
 
-            List<Process> anyProcess = processesArriveWithLowerPriority(processList, aProcess, totalTime);
+            aProcess.cpuTime--;
+            totalTime++;
+            aProcess.lastTime = totalTime;
 
-            if (anyProcess.size() > 0) {
-                for (Process p : anyProcess) {
-                    queue.add(p);
-                    p.isTaken = true;
-                }
-            }
-
-            if (aProcess.cpuTime > 0) {
-                aProcess.lastTime = totalTime;
-                remainIngProcess.add(aProcess);
-            }
-
-        }
-
-        Collections.sort(remainIngProcess, new Comparator<Process>() {
-            @Override
-            public int compare(Process o1, Process o2) {
-                if (o1.priority == o2.priority) {
-                    return o1.arrivalTime - o2.arrivalTime;
-                } else {
-                    return o1.priority - o2.priority;
-                }
-            }
-        });
-
-        for (Process p : remainIngProcess) {
-            if (p.cpuTime > 0) {
-                p.waitingTime += (totalTime - p.lastTime);
-                totalTime += p.cpuTime;
-                p.cpuTime = 0;
-            }
 
         }
 
     }
+
+
+    /*
+* Return all the process available at this time
+* */
+    public static List<Process> allProcessAtTHisTime(List<Process> processList, int time) {
+        List<Process> list = new ArrayList<>();
+
+        for (Process myProess : processList) {
+
+            if (myProess.arrivalTime <= time ) {
+                list.add((myProess));
+
+            }
+
+        }
+
+        return list;
+
+    }
+
+    /*
+    *
+    * return the process which has minimum cpuTime from processList
+    * */
+
+    public static Process extractHigherPriorityProcess(List<Process> processList){
+
+        List<Process> list = new ArrayList<>();
+        for(Process p : processList){
+            if(p.cpuTime>0){
+                list.add(p);
+            }
+        }
+
+        Collections.sort(list, new Comparator<Process>() {
+            @Override
+            public int compare(Process o1, Process o2) {
+                if(o1.priority == o2.priority){
+                    return o1.arrivalTime - o2.arrivalTime;
+                }
+                else{
+                    return o1.priority - o2.priority;
+                }
+            }
+        });
+
+        if(list.size()>0){
+            return list.get(0);
+
+        }
+        else{
+            return null;
+        }
+    }
+
 
     public static void calculateTurnAroundTime(List<Process> processList) {
         for (Process process : processList) {
