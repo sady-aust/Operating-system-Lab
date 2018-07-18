@@ -8,6 +8,16 @@ package BankersAlgo;
         *
         * Bankers Algo
         * will take input from input.txt file
+
+        @algo
+        if(need<=available){
+            then execute process
+            update available
+        }
+        else{
+            do not execute
+            go forward
+        }
  */
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,7 +43,7 @@ public class BankersALgo {
             isTaken = false;
         }
     }
-    
+
     public static void main(String[] args) throws FileNotFoundException {
         File file = new File("F:\\CSE\\3.2\\Oslab\\Codes\\src\\BankersAlgo\\input");
         Scanner sc = new Scanner(new FileInputStream(file));
