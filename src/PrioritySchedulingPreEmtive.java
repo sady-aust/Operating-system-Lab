@@ -94,6 +94,7 @@ public class PrioritySchedulingPreEmtive {
         while (totalTime!=maxTime){
             List<Process> allProcess = allProcessAtTHisTime(processList,totalTime);
             Process aProcess = extractHigherPriorityProcess(allProcess);
+
             if(id!=aProcess.processId) {
                 aProcess.waitingTime += (totalTime - aProcess.lastTime);
 

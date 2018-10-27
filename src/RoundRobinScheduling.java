@@ -128,12 +128,14 @@ public class RoundRobinScheduling {
             Process process = queue.poll();
 
             if (process.cpuTime >= quantam) {
+                System.out.println("Process "+process.processId+" Enter at "+totalTime);
                 process.cpuTime -= quantam;
                 process.waitingTime += (totalTime - process.lastTime);
                 totalTime += quantam;
                 process.lastTime = totalTime;
 
             } else {
+                System.out.println("Process "+process.processId+" Enter at "+totalTime);
                 process.waitingTime += (totalTime - process.lastTime);
                 totalTime += process.cpuTime;
                 process.cpuTime = 0;
